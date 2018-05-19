@@ -1,4 +1,4 @@
-package test;
+package IA.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,7 +9,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import algo.Client;
+import IA.algo.Client;
 
 public class TestClient {
 	
