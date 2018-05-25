@@ -1,6 +1,7 @@
 package Equipe;
 import java.util.ArrayList;
-
+import Algo.Noeud;
+import java.util.HashMap;
 public class Lanceur {
     public static HashMap<String, Noeud> listeOuverte = new HashMap<String, Noeud>();
     public static HashMap<String, Noeud> listeFermee = new HashMap<String, Noeud>();
