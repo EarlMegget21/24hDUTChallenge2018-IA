@@ -9,8 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import algo.Client;
-
 public class TestClient {
 	
 	@BeforeClass
