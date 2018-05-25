@@ -1,4 +1,6 @@
-public static class Noeud{
+package src.Algo;
+
+public class Noeud{
     Noeud parent;
     int x, y;
     double coutG, coutH, coutF;
