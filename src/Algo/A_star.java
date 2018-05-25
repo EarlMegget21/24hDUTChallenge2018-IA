@@ -42,12 +42,7 @@ public class ClientAstar {
         PrintWriter outs = new PrintWriter( new BufferedWriter(
                 new OutputStreamWriter(s.getOutputStream())), true);
         outs.println("L'equipe du sale"); //envoi du nom de l'equipe
-        int num=Integer.parseInt(ins.readLine())+1; //lecture du code de retour qui indique le numéro du joueur
-        //Tout ce qui est commenté correspond à des améliorations possibles du client mais pas
-        // utilisé ici (traitement parallèle)
-//		Ecrire w=new ClientAstar.Ecrire(outs,arret);
-//		Thread t=new Thread(w);
-//		t.start();
+        int num=Integer.parseInt(ins.readLine())+1; //lecture du code de retour qui indique le numero du joueur
         boolean premierTour=true;
         String data;
         String[] infos;

@@ -1,9 +1,11 @@
 package src.Algo;
 
 public class Noeud{
+	
     Noeud parent;
     int x, y;
     double coutG, coutH, coutF;
+    
     public Noeud() {
         super();
         parent=null;
@@ -11,6 +13,7 @@ public class Noeud{
         coutH=0;
         coutF=0;
     }
+    
     public Noeud(Noeud parent, double coutG, double coutH, double coutF, int x, int y) {
         super();
         this.parent = parent;
@@ -20,6 +23,7 @@ public class Noeud{
         this.x=x;
         this.y=y;
     }
+    
     public int getX() {
         return x;
     }
