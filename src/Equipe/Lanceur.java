@@ -29,6 +29,35 @@ public class Lanceur {
         }
     }
 
+    public String moveTowardHome() {
+        Noeud n1 = new Noeud();
+        n1.setX(Client.home[0][0]);
+        n1.setY(Client.home[0][1]);
+        Noeud n2 = new Noeud();
+        n2.setX(Client.home[1[0]);
+        n2.setY(Client.home[1][1]);
+        jouerTour(n1);
+        jouerTour(n2);
+        Noeud nDir = chemins[0].get(0);
+        int[] dir = new int[2] {
+            nDir.getX(), nDir.getY()
+        };
+        String r;
+        if(coord[0] == dir[0]) {
+            if(dir[1] > coord[1]) {
+                r = new String("N");
+            } else {
+                r = new String("S");
+            }
+        } else {
+            if(dir[0] > coord[0]) {
+                r = new String("E");
+            } else {
+                r = new String("O");
+            }
+        }
+    }
+
     public String moveToClosestObjective() {
         /* Parcourir les objectifs declare dans le client et les parcourir pour utiliser jouerTour(e)*/
         Client.listObjective.forEach(str -> jouerTour(str));
