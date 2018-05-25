@@ -1,5 +1,7 @@
 package Equipe;
 
+import java.util.ArrayList;
+
 public class Lanceur {
 
 
@@ -13,7 +15,7 @@ public class Lanceur {
 
     public String getAction() {
         if (coord[2] >= 0) {
-            string x = homeThrow(coord);
+            String x = homeThrow(coord);
             if (x != null) {
                 return x;
             } else {
@@ -37,11 +39,16 @@ public class Lanceur {
 
 
     public String collect() {
-        int caseContent = (int) Client.map[x][y];
-        if (caseContent - '0' >= 0 && caseContent - '0' <= 3) {
+
+        int caseContent=(int)Client.map[coord[0]][coord[1]]-'0';
+
+        if (caseContent>0&&caseContent<4) {
+            coord[2]=2;
             return "P";
-        } else {
-            return getClosestFruit();
         }
+        else {
+            return null;
+        }
+
     }
 }
