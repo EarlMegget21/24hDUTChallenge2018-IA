@@ -68,24 +68,20 @@ public class Client {
 			
 			parseReponse(data); //on parse la reponse du serveur
 			
-			System.out.println("Map:");
-			for(int i=0; i<hauteur; i++){
-				for(int j=0; j<largeur; j++){
-					System.out.print(map[i][j]);
-				}
-				System.out.print("\n");
+//			System.out.println("Map:");
+//			for(int i=0; i<hauteur; i++){
+//				for(int j=0; j<largeur; j++){
+//					System.out.print(map[i][j]);
+//				}
+//				System.out.print("\n");
+//			}
+//			System.out.println("Largeur:"+largeur+";Hauteur:"+hauteur);
+//			System.out.println("Num:"+num);
+//			System.out.println("NbEquipes:"+nbEquipes);
+//			System.out.println("Joueurs:");
+			for(int[] j : listeObjectifs){
+				System.out.println(j[0]+":"+j[1]+":"+j[2]);
 			}
-			System.out.println("Largeur:"+largeur+";Hauteur:"+hauteur);
-			System.out.println("Num:"+num);
-			System.out.println("NbEquipes:"+nbEquipes);
-			System.out.println("Joueurs:");
-			for(Lanceur j : equipe){
-				System.out.println(j.getCoord()[0]+":"+j.getCoord()[1]+":"+j.getCoord()[2]);
-			}
-			System.out.println("Home:"+home[0][0]+":"+home[0][1]+"|"+home[1][0]+":"+home[1][1]);
-			
-			
-			System.exit(1);
 			
 			String action="";
 			
@@ -97,9 +93,15 @@ public class Client {
 					action+="-"; //sinon on met le separateur "-"
 				}
 			}
-			
+			System.out.println(action);
 			outs.println(action);
 			data=ins.readLine();
+			
+			for(int index=0; index < equipe.length; index++){ //pour chaque joueur
+				equipe[index].listeOuverte = new HashMap<String, Noeud>();
+				equipe[index].listeFermee = new HashMap<String, Noeud>();
+				equipe[index].chemins=new ArrayList<Noeud>();
+			}
 		}
 		
 		/* Fermeture des flux */
@@ -165,19 +167,18 @@ public class Client {
 			
 			String[] parse = infos[i].split(","); //parse des equipes
 			String[] joueur;
-			int[] parametres = new int[3];
-			Lanceur[] team;
+			int[] parametres;
+			Lanceur[] team=new Lanceur[3];
 			if(num == i-3 ) { //c'est notre equipe
-				
-				for(int j = 2 ; j < 5 ; ++j) {
-					
+				for(int j=2;j<5;j++){
+					parametres = new int[3];
 					joueur = parse[j].split(":");
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
-					try{
-						parametres[2] = Integer.parseInt(joueur[3]); //si ca ne leve pas d'exception alors c'est un objectif
-					} catch(NumberFormatException e) {
+					if(joueur[3].equals("x")){
 						parametres[2]=-1;
+					}else{
+						parametres[2]=Integer.parseInt(joueur[3]);
 					}
 					
 					if(j==2){
@@ -187,19 +188,26 @@ public class Client {
 						Lanceur lanceur = new Lanceur(parametres);
 						equipe[j-2]=lanceur;
 					}
-					System.out.println(j-2+":"+equipe[j-2].getCoord()[0]+":");
-					System.out.println(equipe[j-2]);
 					team=equipe;
 				}
-				System.out.println(((Quarterback)equipe[0]).getCoord()[0]);
-				System.out.println(equipe[1].getCoord()[0]);
-				System.out.println(equipe[2].getCoord()[0]);
+				for(int j=6;j<=8;j++){
+					joueur = parse[j].split(":");
+					if(j==6){
+						home[0][0] = Integer.parseInt(joueur[1]);
+						home[0][1] = Integer.parseInt(joueur[2]);
+					}
+					if(j==8){
+						home[1][0] = Integer.parseInt(joueur[1]);
+						home[1][1] = Integer.parseInt(joueur[2]);
+					}
+				}
 				
 			} else { //c'est une equipe adverse
 				
 				int[][] equipeAdverse=new int[3][3]; //tableau de 3 joueurs (un joueur : {x, y, fruit} )
 				
 				for(int j = 3 ; j<5 ; j++) {
+					parametres = new int[3];
 					joueur = parse[j].split(":");
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
@@ -212,6 +220,7 @@ public class Client {
 					autresEquipes.add(equipeAdverse);
 				}
 			}
+			
 		}
 	}
 	

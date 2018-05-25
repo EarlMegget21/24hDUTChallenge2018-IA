@@ -10,7 +10,7 @@ public class Lanceur {
 	
     public HashMap<String, Noeud> listeOuverte = new HashMap<String, Noeud>();
     public HashMap<String, Noeud> listeFermee = new HashMap<String, Noeud>();
-    public ArrayList<Noeud>[] chemins;
+    public ArrayList<Noeud> chemins=new ArrayList<Noeud>();
     public Noeud objectif;
     public Noeud position;
     
@@ -49,7 +49,7 @@ public class Lanceur {
         n2.setY(Client.home[1][1]);
         jouerTour(n1);
         jouerTour(n2);
-        Noeud nDir = chemins[0].get(0);
+        Noeud nDir = chemins.get(0);
         int[] dir = new int[] {
             nDir.getX(), nDir.getY()
         };
@@ -78,17 +78,17 @@ public class Lanceur {
     		noeud.setY(donnees[1]);
     		jouerTour(noeud);
     	}
-        int x = chemins[0].get(0).getX();
-        int y = chemins[0].get(0).getY();
+        int x = chemins.get(0).getX();
+        int y = chemins.get(0).getY();
         
-        if(chemins[0].get(0).getX()==x+1){ //on peut tester qu'une coordonnée parce que la prochaine case est forcément collée à nous
+        if(chemins.get(0).getX()==x+1){ //on peut tester qu'une coordonnée parce que la prochaine case est forcément collée à nous
             return "E";
-        }else if(chemins[0].get(0).getX()==x-1){
+        }else if(chemins.get(0).getX()==x-1){
         	return "O";
         }else{
-            if(chemins[0].get(0).getY()==y+1){
+            if(chemins.get(0).getY()==y+1){
             	return "S";
-            }else if(chemins[0].get(0).getY()==y-1){
+            }else if(chemins.get(0).getY()==y-1){
             	return "N";
             }else{
                 System.err.println("Bug");
@@ -137,6 +137,8 @@ public class Lanceur {
             /* on recommence la recherche des noeuds adjacents */
             ajouter_cases_adjacentes(listeFermee.get(courant));
         }
+//        System.out.println(courant.equals(objectifTemporaire.getX() + ":" + objectifTemporaire.getY()));
+//        System.out.println(objectifTemporaire.getX() + ":" + objectifTemporaire.getY());
         /* si la destination est atteinte, on remonte le chemin */
         if (courant.equals(objectifTemporaire.getX() + ":" + objectifTemporaire.getY())) {
             retrouver_chemin_proche(objectifTemporaire);
@@ -235,9 +237,10 @@ public class Lanceur {
             prec = tmp.getParent();
             cheminTemporaire.add(0, tmp);
         }
-        //on n'ajoute pas le départ car on y est deja
-        if (chemins[0].isEmpty() || cheminTemporaire.size() < chemins[0].size()) { //si le chemin est mieux ou si aucun chemin n'a encore ete trouve, on l'assigne
-            chemins[0] = cheminTemporaire;
+        System.out.println(chemins);
+        //on n'ajoute pas le depart car on y est deja
+        if (chemins.isEmpty() || cheminTemporaire.size() < chemins.size()) { //si le chemin est mieux ou si aucun chemin n'a encore ete trouve, on l'assigne
+            chemins = cheminTemporaire;
         }
     }
 
@@ -455,11 +458,11 @@ public class Lanceur {
 		listeFermee = listeFermee;
 	}
 
-	public ArrayList<Noeud>[] getChemins() {
+	public ArrayList<Noeud> getChemins() {
 		return chemins;
 	}
 
-	public void setChemins(ArrayList<Noeud>[] chemins) {
+	public void setChemins(ArrayList<Noeud> chemins) {
 		this.chemins = chemins;
 	}
 
