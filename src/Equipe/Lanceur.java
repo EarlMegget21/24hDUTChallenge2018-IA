@@ -88,4 +88,25 @@ public class Lanceur {
             System.err.println("Pas de solution");
         }
     }
+
+    public static void trouverCible(){
+        int x=1;
+        int y=1;
+        int points=0;
+        for(int j=1; j<hauteur-1; j++){ //on part de 1 et on enlève 1 car les bords sont des murs
+            for(int i=1; i<largeur-1; i++){
+                try {
+                    if(Integer.parseInt(lab[j][i])>points){
+                        x=i;
+                        y=j;
+                        points=Integer.parseInt(lab[j][i]);
+                    }
+                } catch (NumberFormatException e) {
+                    continue;
+                }
+            }
+        }
+        objectif.setX(x);
+        objectif.setY(y);
+    }
 }
