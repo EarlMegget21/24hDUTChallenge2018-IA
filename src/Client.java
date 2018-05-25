@@ -8,20 +8,20 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
+import Algo.*;
+import Equipe.*;
 
 import src.Algo.Noeud;
 import src.Equipe.Lanceur;
 
 public class Client {
 	
-	public static int PORT=1337; //port par default (indiqué dans l'énoncé)
 	public static BufferedReader ins; //Flux d'entree
+	public static int PORT=1337; //port par default (indiquï¿½ dans l'ï¿½non	public static int PORT=1337; //port par default (indiquï¿½ dans l'ï¿½non	public static int PORT=1337; //port par default (indiquï¿½ dans l'ï¿½non	public static int PORT=1337; //port par default (indiquï¿½ dans l'ï¿½non	public static BufferedReader ins; //Flux d'entree
 	public static PrintWriter outs; //Flux de sortie
 	
-	public static String data; // données recus par le serveur
-	
-	public static String[][] map; //tableau représentant la map
-	public static int largeur, hauteur; //dimensions
+	public static String data; // donnï¿½es recus par le serveu	
+	public static String[][] map; //tableau reprï¿½sentant la ma	public static int largeur, hauteur; //dimensions
 	public static boolean premierTour; //indiquant si c'est le premier tour ou non
 	public static int num; // numero d'equipe
 	public static int nbEquipes; // nombre d'equipes
@@ -45,16 +45,14 @@ public class Client {
 		outs = new PrintWriter( new BufferedWriter(
 				new OutputStreamWriter(s.getOutputStream())), true);
 		outs.println("L'equipe du sale");
-		//lecture du code de retour qui indique le numéro d'equipe
-		try {
+		//lecture du code de retour qui indique le numï¿½ro d'equip		try {
 			num = Integer.parseInt(ins.readLine());
 		} catch (NumberFormatException e1) {
 			System.err.println("code de retour du serveur pas int");
 			e1.printStackTrace();
 			System.exit(1);
 		} catch (IOException e1) {
-			System.err.println("problème de lecture");
-			e1.printStackTrace();
+			System.err.println("problï¿½me de lecture")			e1.printStackTrace();
 			System.exit(1);
 		}
 		
@@ -64,8 +62,7 @@ public class Client {
 		
 		while(!data.equals("FIN")){
 			
-			parseReponse(data); //on parse la réponse du serveur
-			
+			parseReponse(data); //on parse la rï¿½ponse du serveu			
 			String action="";
 			
 			for(int index=0; index < equipe.length; index++){ //pour chaque joueur
@@ -96,7 +93,7 @@ public class Client {
 		String[] infosMap; //apres le split de chaque ligne de la map
 		String[] ligne; //une ligne avec chaque case : String avec . | X | 0-4
 		
-		/* Récupération des infos envoyées par le serveur */
+		/* Rï¿½cupï¿½ration des infos envoyï¿½es par le serveur */
 		infos=data.split("_");
 		
 		//nombre d'equipes
@@ -109,13 +106,13 @@ public class Client {
 		largeur=Integer.parseInt(infosMap[0].split(":")[0]);
 		hauteur=Integer.parseInt(infosMap[0].split(":")[1]);
 		
-		//convertion du String en tableau de String à deux dimensions pour le plateau de jeu (on aurait pu faire à une seule dimension avec String.toArray())
+		//convertion du String en tableau de String ï¿½ deux dimensions pour le plateau de jeu (on aurait pu faire ï¿½ une seule dimension avec String.toArray())
 		if(premierTour){ //pour n'allouer un nouveau tableau qu'au premier tour car les dimensions ne changent pas
 			map=new String[hauteur][];
 			premierTour=false;
 		}
 		
-		//on créer la map
+		//on crï¿½er la map
 		for(int j=1; j<=hauteur; j++){ //pour chaque ligne (la premiere case 
 			ligne=new String[largeur];
 			for(int i=0; i<largeur; i++){ //pour chaque case dans la ligne
@@ -123,8 +120,8 @@ public class Client {
 				//ligne[i]=cases[i+(j*largeur)];
 				//version objectif le plus proche
 				try{
-					int type = Integer.parseInt(ligne[i]); //si ça ne lève pas d'exception alors c'est un objectif
-					listeObjectifs.add(new int[]{i, j, type}); //on ajoute ses coordonnés à la liste des objectifs
+					int type = Integer.parseInt(ligne[i]); //si ï¿½a ne lï¿½ve pas d'exception alors c'est un objectif
+					listeObjectifs.add(new int[]{i, j, type}); //on ajoute ses coordonnï¿½s ï¿½ la liste des objectifs
 				}catch(NumberFormatException e){
 					//ce n'est pas un objectif
 				}
@@ -145,7 +142,7 @@ public class Client {
 				parametres[0] = Integer.parseInt(joueur[1]); //x
 				parametres[1] = Integer.parseInt(joueur[2]); //y
 				try{
-					parametres[3] = Integer.parseInt(ligne[i]); //si ça ne lève pas d'exception alors le joueur a un fruit
+					parametres[3] = Integer.parseInt(ligne[i]); //si ï¿½a ne lï¿½ve pas d'exception alors le joueur a un fruit
 				} catch(NumberFormatException e) {
 					parametres[3]=-1; //sinon il n'a pas de fruit
 				}
@@ -155,7 +152,7 @@ public class Client {
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
 					try{
-						parametres[3] = Integer.parseInt(ligne[i]); //si ça ne lève pas d'exception alors c'est un objectif
+						parametres[3] = Integer.parseInt(ligne[i]); //si ï¿½a ne lï¿½ve pas d'exception alors c'est un objectif
 						listeObjectifs.add(parametres);
 					} catch(NumberFormatException e) {
 						parametres[3]=-1;
@@ -177,7 +174,7 @@ public class Client {
 				parametres[0] = Integer.parseInt(joueur[1]); //x
 				parametres[1] = Integer.parseInt(joueur[2]); //y
 				try{
-					parametres[3] = Integer.parseInt(ligne[i]); //si ça ne lève pas d'exception alors le joueur a un fruit
+					parametres[3] = Integer.parseInt(ligne[i]); //si ï¿½a ne lï¿½ve pas d'exception alors le joueur a un fruit
 				} catch(NumberFormatException e) {
 					parametres[3]=-1; //sinon il n'a pas de fruit
 				}
@@ -187,7 +184,7 @@ public class Client {
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
 					try{
-						parametres[3] = Integer.parseInt(ligne[i]); //si ça ne lève pas d'exception alors c'est un objectif
+						parametres[3] = Integer.parseInt(ligne[i]); //si ï¿½a ne lï¿½ve pas d'exception alors c'est un objectif
 						listeObjectifs.add(parametres);
 					} catch(NumberFormatException e) {
 						parametres[3]=-1;
