@@ -56,6 +56,7 @@ public class Lanceur {
                 r = new String("O");
             }
         }
+        return r
     }
 
     public String moveToClosestObjective() {
