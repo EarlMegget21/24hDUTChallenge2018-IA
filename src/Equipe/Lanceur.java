@@ -11,7 +11,7 @@ public class Lanceur {
             return "P";
         }
         else{
-            return geClosestFruit();
+            return getClosestFruit();
         }
     }
 }
