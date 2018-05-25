@@ -1,4 +1,3 @@
-package algo;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -9,11 +8,13 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import Algo.*;
+import Equipe.*;
 
 
 public class Client {
 //	public static boolean arret=false;
-	public static int PORT=1337; //port par default (indiqué dans l'énoncé)
+	public static int PORT=1337; //port par default (indiquï¿½ dans l'ï¿½noncï¿½)
 	
 	public static void main(String[] args) throws Exception {
 		/* Initialisation connexion Socket */
