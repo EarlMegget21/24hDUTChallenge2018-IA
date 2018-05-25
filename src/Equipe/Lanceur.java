@@ -480,6 +480,7 @@ public class Lanceur {
 	}
 
 	public int[] getCoord() {
+		System.out.println(coord[0]);
 		return coord;
 	}
 

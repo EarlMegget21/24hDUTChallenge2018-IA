@@ -67,11 +67,11 @@ public class Client {
 		while(!data.equals("FIN")){
 			
 			parseReponse(data); //on parse la reponse du serveur
-
+			
 			System.out.println("Map:");
 			for(int i=0; i<hauteur; i++){
 				for(int j=0; j<largeur; j++){
-					System.out.print(map[j][i]);
+					System.out.print(map[i][j]);
 				}
 				System.out.print("\n");
 			}
@@ -141,10 +141,12 @@ public class Client {
 		}
 		
 		//on creer la map
-		for(int j=1; j<=hauteur; j++){ //pour chaque ligne (la premiere case : dimensions)
-			ligne=new String[largeur];
-			for(int i=0; i<largeur; i++){ //pour chaque case dans la ligne
+		map=new String[largeur][hauteur];
+		for(int j=1; j<=largeur; j++){ //pour chaque ligne (la premiere case : dimensions)
+			ligne=new String[hauteur];
+			for(int i=0; i<hauteur; i++){ //pour chaque case dans la ligne
 				ligne[i]=infosMap[j].substring(i, i+1);
+				
 				//ligne[i]=cases[i+(j*largeur)];
 				//version objectif le plus proche
 				try{
@@ -159,50 +161,54 @@ public class Client {
 		}
 		
 		//on creer notre equipe et les equipes adverses
-		for(int i = 3; i < nbEquipes ; i++) {
+		for(int i = 3; i < nbEquipes+3 ; i++) {
 			
 			String[] parse = infos[i].split(","); //parse des equipes
 			String[] joueur;
 			int[] parametres = new int[3];
-			
+			Lanceur[] team;
 			if(num == i-3 ) { //c'est notre equipe
 				
-				joueur = parse[2].split(":");
-				
-				for(int j = 3 ; j < 5 ; i++) {
-					joueur = parse[i].split(":");
+				for(int j = 2 ; j < 5 ; ++j) {
+					
+					joueur = parse[j].split(":");
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
 					try{
-						parametres[3] = Integer.parseInt(joueur[i]); //si ca ne leve pas d'exception alors c'est un objectif
-						listeObjectifs.add(parametres);
+						parametres[2] = Integer.parseInt(joueur[3]); //si ca ne leve pas d'exception alors c'est un objectif
 					} catch(NumberFormatException e) {
-						parametres[3]=-1;
+						parametres[2]=-1;
 					}
-					if(j==3){
+					
+					if(j==2){
 						Quarterback quarterBack = new Quarterback(parametres);
-						equipe[j]=quarterBack;
+						equipe[j-2]=quarterBack;
 					}else{
 						Lanceur lanceur = new Lanceur(parametres);
-						equipe[j]=lanceur;
+						equipe[j-2]=lanceur;
 					}
+					System.out.println(j-2+":"+equipe[j-2].getCoord()[0]+":");
+					System.out.println(equipe[j-2]);
+					team=equipe;
 				}
+				System.out.println(((Quarterback)equipe[0]).getCoord()[0]);
+				System.out.println(equipe[1].getCoord()[0]);
+				System.out.println(equipe[2].getCoord()[0]);
 				
 			} else { //c'est une equipe adverse
 				
 				int[][] equipeAdverse=new int[3][3]; //tableau de 3 joueurs (un joueur : {x, y, fruit} )
 				
-				for(int j = 3 ; j<5 ; i++) {
-					joueur = parse[i].split(":");
+				for(int j = 3 ; j<5 ; j++) {
+					joueur = parse[j].split(":");
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
 					try{
-						parametres[3] = Integer.parseInt(joueur[3]); //si �a ne l�ve pas d'exception alors c'est un objectif
-						listeObjectifs.add(parametres);
+						parametres[2] = Integer.parseInt(joueur[3]); //si �a ne l�ve pas d'exception alors c'est un objectif
 					} catch(NumberFormatException e) {
-						parametres[3]=-1;
+						parametres[2]=-1;
 					}
-					equipeAdverse[j]=parametres;
+					equipeAdverse[j-2]=parametres;
 					autresEquipes.add(equipeAdverse);
 				}
 			}
