@@ -194,7 +194,7 @@ public class Client {
 					parametres[0] = Integer.parseInt(joueur[1]);
 					parametres[1] = Integer.parseInt(joueur[2]);
 					try{
-						parametres[2] = Integer.parseInt(joueur[3]); //si �a ne l�ve pas d'exception alors c'est un objectif
+						parametres[2] = Integer.parseInt(joueur[3]); //si ca ne leve pas d'exception alors c'est un objectif
 					} catch(NumberFormatException e) {
 						parametres[2]=-1;
 					}

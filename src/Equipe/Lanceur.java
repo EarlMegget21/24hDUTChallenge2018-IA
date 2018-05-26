@@ -12,6 +12,7 @@ public class Lanceur {
     public HashMap<String, Noeud> listeFermee = new HashMap<String, Noeud>();
     public ArrayList<Noeud> chemins=new ArrayList<Noeud>();
     public Noeud position;
+    public String move=null;
     
     private int[] coord; //[0] = x et [1] = y et [2] = fruit (0 a 3 : c'est un fruit; 4 : c'est une chataigne; -1 : pas de fruit)
 
@@ -39,30 +40,36 @@ public class Lanceur {
         }
     }
 
+    /** fonction qui permet de retourner a la maison **/
     public String moveTowardHome() {
+    	//on creer les deux noeuds des extremitees de la maison
         Noeud n1 = new Noeud();
         n1.setX(Client.home[0][0]);
         n1.setY(Client.home[0][1]);
         Noeud n2 = new Noeud();
         n2.setX(Client.home[1][0]);
         n2.setY(Client.home[1][1]);
-
-		System.out.println(Client.home[1][0]+":"+Client.home[1][1]);
+        //on recupere le chemin le plus court
         jouerTour(n1);
         jouerTour(n2);
-
+        //on renvoie l'action a faire au tour
         int x = position.getX();
         int y = position.getY();
         if(chemins.get(0).getX()==x+1){ //on peut tester qu'une coordonnÃ©e parce que la prochaine case est forcÃ©ment collÃ©e Ã  nous
-            return "E";
+            move="E";
+        	return "E";
         }else if(chemins.get(0).getX()==x-1){
+        	move="O";
         	return "O";
         }else{
             if(chemins.get(0).getY()==y+1){
+            	move="S";
             	return "S";
             }else if(chemins.get(0).getY()==y-1){
+            	move="N";
             	return "N";
             }else{
+            	move="X";
                 System.err.println("Bug");
                 return "X";
             }
@@ -71,38 +78,44 @@ public class Lanceur {
 
     /** avancer sur la prochaine case du chemin le plus proche avec a* **/
     public String moveToClosestObjective() {
-        /* Parcourir les objectifs declare dans le client et les parcourir pour utiliser jouerTour(e) */
-    	boolean pasBloque=false;
-    	for(int[] donnees : Client.listeObjectifs){
-    		if(donnees[0]==coord[0] && donnees[1]==coord[1]){
+    	boolean pasBloque=false; //indique si le joueur est bloque dans un coin par les autres
+    	for(int[] donnees : Client.listeObjectifs){ //Parcourir les objectifs(fruits) declares dans le client et les parcourir pour utiliser jouerTour(e)
+    		if(donnees[0]==coord[0] && donnees[1]==coord[1]){ //si l'objectif se trouve sur la meme case que le joueur alors on l'ignore
     			continue;
     		}
+    		//creation du noeud
     		Noeud noeud = new Noeud();
     		noeud.setX(donnees[0]);
     		noeud.setY(donnees[1]);
-    		
+    		//calcul du chemin et attribution du meilleur chemin (fruit le plus proche)
     		pasBloque=jouerTour(noeud);
-    		listeFermee=new HashMap<String,Noeud>();
+    		listeFermee=new HashMap<String,Noeud>(); //reinitialisation des listes
     		listeOuverte=new HashMap<String,Noeud>();
     	}
 
         int x = position.getX();
         int y = position.getY();
-        if(!pasBloque){
+        if(!pasBloque){ //si le joueur est bloque, il bouge pas a ce tour
             System.err.println("Bloque");
+            move="X";
         	return "X";
         }
-        if(chemins.get(0).getX()==x+1){ //on peut tester qu'une coordonnÃ©e parce que la prochaine case est forcÃ©ment collÃ©e Ã  nous
+        if(chemins.get(0).getX()==x+1){ //on peut tester qu'une coordonnee parce que la prochaine case est forcement collee a nous
+        	move="E";
             return "E";
         }else if(chemins.get(0).getX()==x-1){
+        	move="O";
         	return "O";
         }else{
             if(chemins.get(0).getY()==y+1){
+            	move="S";
             	return "S";
             }else if(chemins.get(0).getY()==y-1){
+            	move="N";
             	return "N";
             }else{
                 System.err.println("Bug");
+                move="X";
                 return "X";
             }
         }
@@ -118,7 +131,7 @@ public class Lanceur {
                 }
                 int[] temp=null;
                 for(int[] obj : Client.listeObjectifs){ //on parcours les objectifs pour retirer le fruit qui est a notre case
-                	if(obj[0]==coord[0] && obj[1]==coord[1]){ // (pas obj.equals(coord) car la troisieme case du tableau n'est pas pareil
+                	if(obj[0]==coord[0] && obj[1]==coord[1]){ // pas obj.equals(coord) car la troisieme case du tableau n'est pas pareil
                 		temp=obj;
                 		break;
                 	}
@@ -128,6 +141,7 @@ public class Lanceur {
                 }
                 coord[2] = caseContent; //on redefinit le fruit actuel dans l'inventaire
                 Client.map[coord[0]][coord[1]]=".";
+                move="X";
                 return "P"; //on retourne la commande pour prendre le fruit
             } else { //si c'est une chataign on la prend pas
                 return null; //TODO: retourner une fontion chataigne qui retourne null et qui est redefinit dans la classe QuarterBack pour la prendre et retourner une commande
@@ -148,8 +162,10 @@ public class Lanceur {
         /* ajout de courant dans la liste ouverte */
         listeOuverte.put(courant, position);
         
+        /* passage listeOuverte -> listeFermee */
         ajouter_liste_fermee(courant);
         
+        /* ajoute les voisins a listeOuverte pour traitement */
         ajouter_cases_adjacentes(position, objectifTemporaire);
         
         /* tant que la destination n'a pas ete atteinte et qu'il reste des noeuds a explorer dans la liste ouverte */
@@ -167,12 +183,15 @@ public class Lanceur {
         
         /* si la destination est atteinte, on remonte le chemin */
         if (courant.equals(objectifTemporaire.getX() + ":" + objectifTemporaire.getY())) {
+        	/* si une NullPointerException se leve c'est que un des noeuds n'a pas de parent 
+        	 (generalement le noeud de depart, on essaie donc de recuperer un chemin contenant que la case ou on est deja sauf 
+        	 que cette case est censee etre exclu du chemin de base */
             retrouver_chemin_proche(objectifTemporaire);
-            return true;
-            //Fin
+            
+            return true; //on a bien un chemin
         } else {
             System.err.println("Pas de solution");
-            return false;
+            return false; //on a parcouru tous les noeuds(cases) et on n'arrive jamais au point de depart
         }
     }
 
@@ -200,7 +219,7 @@ public class Lanceur {
                 boolean jbloque=false;
                 for(Lanceur l : Client.equipe){
                 	if(l.getCoord()[0]==i && l.getCoord()[1]==j ){
-                		
+                		/* joueur colle a nous nous empechant d'avancer on oublie */
                 		jbloque=true;
                 	}
                 }
@@ -289,7 +308,7 @@ public class Lanceur {
     public static double distance(int x1, int y1, int x2, int y2) {
         /* distance euclidienne */
         return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-        /* carrÃ© de la distance euclidienne pour avoir un nombre rond(passer Ã  des int), les nombres ronds sont moins lourds Ã  manipuler */
+        /* carre de la distance euclidienne pour avoir un nombre rond(passer a des int), les nombres ronds sont moins lourds aa manipuler */
         /* return (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2); */
     }
 
@@ -298,8 +317,10 @@ public class Lanceur {
         return l.containsKey(c);
     }
     
- // posHome doit être de la forme :  ((1,2),(2,1))
-  //posJoueur : (1,2);
+    /** fonction qui envoie un fruit a la maison
+  		Client.home doit être de la forme : ((1,2),(2,1))
+  		on stock que les deux cases aux extremitees de la
+  		maison car on va lancer les fruits de loin **/
     private String homeThrow() {
 
       int[] case1 = new int[2]; //on part du principe que posHome est un tableau comportant 2 cases, chaque case étant un tableau de deux index : x et y
@@ -313,16 +334,17 @@ public class Lanceur {
     	  
 		if(coord[0]==case1[0]) { // si le joueur est aligné à case 1 verticalement
 		
-		  distance =  coord[1]-case1[1];
+		  distance =  coord[1]-case1[1]; //distance positive si le joueur est en dessus de la case (maison en bas de la map) et vice versa
 		  
-		  if(Math.abs(distance) <= 4) {
+		  if(Math.abs(distance) <= 4) { //si la maison est atteignable au lancer
 			  
-		    boolean obstacle = obstacle(case1);
+		    boolean obstacle = obstacle(case1); //on definit si un obstacle est present entre nous et la maison
 		    
 		    if(obstacle) {
-		    	
 		      if(distance<0){ //si la distance est négative, cad le joueur est placé plus haut(x moins grand) que la case maison
-		        coord[2]=-1;
+		        //apres le lancer on remet l'inventaire du joueur a l'inital (pas besoin normalement 
+		        //car les variables sont reinitialisees a chaque tour donc apres chaque envoi d'un action au serveur
+		    	  coord[2]=-1; 
 		    	  return "LS"; // alors on lance vers le bas ( vu qu'on est plus haut)
 		      }
 		      if(distance>0){ //si la distance est positive, cad le joueur est placé plus bas(x plus grand) que la case maison
@@ -345,10 +367,12 @@ public class Lanceur {
 		    	
 		      if(distance<0){ //si la distance est négative, cad le joueur est placé plus a gauche(x moins grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X"; //signifie qu'au prochain tour le joueur sera sur la meme place
 		    	  return "LE"; // alors on lance vers la droite ( vu qu'on est plus a gauche)
 		      }
 		      if(distance>0){ //si la distance est positive, cad le joueur est placé plus à droite(x plus grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X";
 		    	  return "LO";//alors on lance vers la gauche(vu qu'on est plus a droite)
 		      }
 		    }
@@ -364,11 +388,13 @@ public class Lanceur {
 		    if(obstacle) {
 		      if(distance<0) { //si la distance est négative, cad le joueur est placé plus haut(x moins grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X";
 		        return "LS"; // alors on lance vers le bas ( vu qu'on est plus haut)
 		      }
 		      
 		      if(distance>0) { //si la distance est positive, cad le joueur est placé plus bas(x plus grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X";
 		        return "LN";//alors on lance vers le haut (vu qu'on est plus bas)
 		      }
 		    }
@@ -385,10 +411,12 @@ public class Lanceur {
 		    if(obstacle){
 		      if(distance<0){ //si la distance est négative, cad le joueur est placé plus a gauche(x moins grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X";
 		    	  return "LE"; // alors on lance vers la droite ( vu qu'on est plus a gauche)
 		      }
 		      if(distance>0){ //si la distance est positive, cad le joueur est placé plus à droite(x plus grand) que la case maison
 		    	  coord[2]=-1;
+		    	  move="X";
 		    	  return "LO";//alors on lance vers la gauche(vu qu'on est plus à)
 		      }
 		    }
@@ -398,21 +426,22 @@ public class Lanceur {
       return null; //par default
     }
 
-  //necessite l'import de CLient.java
-    public boolean obstacle(int[] box) { //retourne un boolean, true si le chemin ne comporte pas d'obstacle et false sinon
+    /** methode qui indique si il y a un obstacle entre le joueur et la case en parametre 
+       retourne un boolean, true si le chemin ne comporte pas d'obstacle et false sinon **/
+    public boolean obstacle(int[] box) {
     	
-      if(coord[0]==box[0]) {
+      if(coord[0]==box[0]) { //si les cases sont alignees verticalement (meme x)
     	  
         int i = coord[0];
-        if(coord[1]-box[1] <0){
-            for(int j=coord[1]+1; j<=box[1];j++){
-              if(!Client.map[i][j].equals(".")){
+        if(coord[1]-box[1] <0){ //si la distance est <0 alors la case est en dessous du joueur
+            for(int j=coord[1]+1; j<=box[1];j++){ //pour chaque case entre les deux
+              if(!Client.map[i][j].equals(".")){ //si ce n'est pas vide alors obstacle
                 return false;
               }
             }
-            return true;
+            return true; //pas d'obstacle
             
-        } else if(coord[1]-box[1] >0) {
+        } else if(coord[1]-box[1] >0) { //si case au dessus du joueur
         	
             for(int j=coord[1]-1; j<=box[1];j--){
               if(!Client.map[i][j].equals(".")){
@@ -421,15 +450,15 @@ public class Lanceur {
             }
             return true;
             
-        } else {
+        } else { //par default joueur sur case donc pas d'obstacle (peut etre renvoyer false pour pas faire de lancer
         	
         	return true; //par default
         }
         
-      } else if(coord[1]==box[1]) {
+      } else if(coord[1]==box[1]) { //si alignes horizontalement
     	  
         int i = coord[1];
-        if(coord[0]-box[0] <0) {
+        if(coord[0]-box[0] <0) { //si case a droite
         	
             for(int j=coord[0]+1; j<=box[0];j++){
               if(!Client.map[j][i].equals(".")){
@@ -438,7 +467,7 @@ public class Lanceur {
             }
             return true;
             
-        } else if(coord[0]-box[0] >0) {
+        } else if(coord[0]-box[0] >0) { //si case a gauche
         	
             for(int j=coord[0]-1; j<=box[0];j--){
               if(!Client.map[j][i].equals(".")){
@@ -449,15 +478,17 @@ public class Lanceur {
             
         } else {
         	
-        	return true; //par default
+        	return true; //par default car veut dire sur meme case
         }
         
       } else {
     	  
-    	  return true; //par default
+    	  return false; //par default false car si x et y differents alors pas de lancer car lancer se fait en ligne droite
       }
     }
 
+    /** getters and setters **/
+    
 	public HashMap<String, Noeud> getListeOuverte() {
 		return listeOuverte;
 	}
@@ -489,6 +520,4 @@ public class Lanceur {
 	public void setCoord(int[] coord) {
 		this.coord = coord;
 	}
-    
-    
 }
