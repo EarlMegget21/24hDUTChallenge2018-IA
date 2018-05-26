@@ -16,7 +16,7 @@ import src.Equipe.Quarterback;
 
 public class Client {
 
-	public static int PORT=1337; //port par default (indique dans l'enonce)
+	public static int PORT; //port par default (indique dans l'enonce)
 	public static BufferedReader ins; //Flux d'entree
 	public static PrintWriter outs; //Flux de sortie
 	
@@ -32,12 +32,9 @@ public class Client {
 	
 	public static ArrayList<int[]> listeObjectifs=new ArrayList<int[]>(); //stock les x et y de tous les objectifs
 	
-	public static HashMap<String, Noeud> listeOuverte=new HashMap<String, Noeud>();
-	public static HashMap<String, Noeud> listeFermee=new HashMap<String, Noeud>();
-	public static ArrayList<Noeud> chemin=new ArrayList<Noeud>();
-	
 	/** Main qui joue au jeu **/
 	public static void main(String[] args) throws Exception {
+		PORT=Integer.parseInt(args[1]);
 		/* Initialisation connexion Socket */
 		Socket s = new Socket(args[0], PORT);
 		System.out.println("STARTClient");
@@ -68,23 +65,8 @@ public class Client {
 			
 			parseReponse(data); //on parse la reponse du serveur
 			
-//			System.out.println("Map:");
-//			for(int i=0; i<hauteur; i++){
-//				for(int j=0; j<largeur; j++){
-//					System.out.print(map[i][j]);
-//				}
-//				System.out.print("\n");
-//			}
-//			System.out.println("Largeur:"+largeur+";Hauteur:"+hauteur);
-//			System.out.println("Num:"+num);
-//			System.out.println("NbEquipes:"+nbEquipes);
-//			System.out.println("Joueurs:");
-			for(int[] j : listeObjectifs){
-				System.out.println(j[0]+":"+j[1]+":"+j[2]);
-			}
-			
 			String action="";
-			
+
 			for(int index=0; index < equipe.length; index++){ //pour chaque joueur
 				action+=equipe[index].getAction(); // on recupere son action
 				if(index >= 3){ //si c'est le dernier joueur on met le "\n"
@@ -93,7 +75,7 @@ public class Client {
 					action+="-"; //sinon on met le separateur "-"
 				}
 			}
-			System.out.println(action);
+			
 			outs.println(action);
 			data=ins.readLine();
 			
@@ -102,6 +84,7 @@ public class Client {
 				equipe[index].listeFermee = new HashMap<String, Noeud>();
 				equipe[index].chemins=new ArrayList<Noeud>();
 			}
+			listeObjectifs=new ArrayList<int[]>();
 		}
 		
 		/* Fermeture des flux */
@@ -143,17 +126,16 @@ public class Client {
 		}
 		
 		//on creer la map
-		map=new String[largeur][hauteur];
-		for(int j=1; j<=largeur; j++){ //pour chaque ligne (la premiere case : dimensions)
-			ligne=new String[hauteur];
-			for(int i=0; i<hauteur; i++){ //pour chaque case dans la ligne
+		map=new String[hauteur][largeur];
+		for(int j=1; j<=hauteur; j++){ //pour chaque ligne (la premiere case : dimensions)
+			ligne=new String[largeur];
+			for(int i=0; i<largeur; i++){ //pour chaque case dans la ligne
 				ligne[i]=infosMap[j].substring(i, i+1);
 				
-				//ligne[i]=cases[i+(j*largeur)];
-				//version objectif le plus proche
 				try{
 					int type = Integer.parseInt(ligne[i]); //si ca ne leve pas d'exception alors c'est un objectif
-					listeObjectifs.add(new int[]{i, j, type}); //on ajoute ses coordonnees a la liste des objectifs
+					if(type<4)
+						listeObjectifs.add(new int[]{i, j-1, type}); //on ajoute ses coordonnees a la liste des objectifs
 				}catch(NumberFormatException e){
 					//ce n'est pas un objectif
 				}
